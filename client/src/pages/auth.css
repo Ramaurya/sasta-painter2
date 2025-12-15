@@ -1,0 +1,201 @@
+/* src/pages/auth.css */
+
+.auth-page {
+    min-height: 100vh;
+    display: flex;
+    background-color: #f8fafc;
+    /* Slate-50 */
+    font-family: 'Inter', sans-serif;
+    overflow: hidden;
+}
+
+/* --- Left Section: Brand Visual --- */
+.auth-visual {
+    flex: 1;
+    position: relative;
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    padding: 3rem;
+}
+
+.auth-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(234, 88, 12, 0.85), rgba(15, 23, 42, 0.9));
+    /* Orange to Dark */
+    z-index: 1;
+}
+
+.auth-brand-content {
+    position: relative;
+    z-index: 2;
+    max-width: 450px;
+    text-align: center;
+}
+
+.auth-brand-content h1 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+    line-height: 1.2;
+}
+
+.auth-brand-content p {
+    font-size: 1.1rem;
+    opacity: 0.9;
+    line-height: 1.6;
+}
+
+/* --- Right Section: Form --- */
+.auth-form-container {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    background-color: #f8fafc;
+}
+
+.auth-card {
+    background: white;
+    width: 100%;
+    max-width: 420px;
+    padding: 2.5rem;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+}
+
+.auth-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 0.5rem;
+    text-align: center;
+}
+
+.auth-subtitle {
+    text-align: center;
+    color: #64748b;
+    margin-bottom: 2rem;
+    font-size: 0.95rem;
+}
+
+.auth-form .form-group {
+    margin-bottom: 1.5rem;
+}
+
+.auth-form label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #334155;
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.auth-form .form-control {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.2s;
+    background-color: #f8fafc;
+}
+
+.auth-form .form-control:focus {
+    outline: none;
+    border-color: #f97316;
+    /* Orange-500 */
+    box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+    background-color: white;
+}
+
+.btn-auth {
+    width: 100%;
+    padding: 0.85rem;
+    background-color: #f97316;
+    color: white;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.2s, transform 0.1s;
+    margin-top: 0.5rem;
+}
+
+.btn-auth:hover {
+    background-color: #ea580c;
+    /* Orange-600 */
+    transform: translateY(-1px);
+}
+
+.btn-auth:active {
+    transform: translateY(0);
+}
+
+.auth-footer {
+    margin-top: 1.5rem;
+    text-align: center;
+    font-size: 0.9rem;
+    color: #64748b;
+}
+
+.auth-footer a {
+    color: #f97316;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.auth-footer a:hover {
+    text-decoration: underline;
+}
+
+.auth-error {
+    background-color: #fef2f2;
+    color: #ef4444;
+    padding: 0.75rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    font-size: 0.9rem;
+    border: 1px solid #fee2e2;
+    text-align: center;
+}
+
+/* --- Mobile Responsiveness --- */
+@media (max-width: 768px) {
+    .auth-page {
+        flex-direction: column;
+    }
+
+    .auth-visual {
+        flex: 0 0 150px;
+        /* Short banner on top */
+        padding: 1rem;
+        text-align: center;
+        align-items: flex-end;
+        /* Push text down if any */
+    }
+
+    .auth-brand-content {
+        /* Hide main brand content on mobile if space is tight, or scale down */
+        display: none;
+    }
+
+    .auth-form-container {
+        flex: 1;
+        padding: 1.5rem 1rem;
+        align-items: flex-start;
+        /* Move card closer to top */
+    }
+
+    .auth-card {
+        padding: 1.5rem;
+        box-shadow: none;
+        background: transparent;
+    }
+}

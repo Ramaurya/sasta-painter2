@@ -1,0 +1,137 @@
+/* src/pages/services/interiorPainting.css */
+
+/* Page Container */
+.interior-painting-page {
+    font-family: 'Inter', sans-serif;
+    color: var(--text-primary, #333);
+    overflow-x: hidden;
+}
+
+/* Banner Section */
+.interior-banner {
+    position: relative;
+    width: 100%;
+    height: 70vh;
+    /* Desktop */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    /* Left aligned on desktop */
+}
+
+/* Dark Gradient Overlay */
+.interior-banner::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg,
+            rgba(0, 0, 0, 0.8) 0%,
+            rgba(0, 0, 0, 0.5) 50%,
+            rgba(0, 0, 0, 0.2) 100%);
+    z-index: 1;
+}
+
+/* Content Container */
+.interior-banner-content {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    color: #fff;
+}
+
+/* Tag */
+.interior-banner-tag {
+    display: inline-block;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #fbbf24;
+    /* Accent color example */
+    margin-bottom: 1rem;
+}
+
+/* Heading */
+.interior-banner h1 {
+    font-size: 3.5rem;
+    font-weight: 800;
+    line-height: 1.2;
+    margin-bottom: 1rem;
+    max-width: 800px;
+}
+
+/* Subheading */
+.interior-banner p {
+    font-size: 1.25rem;
+    font-weight: 400;
+    margin-bottom: 2rem;
+    max-width: 600px;
+    opacity: 0.9;
+}
+
+/* CTA Button */
+.banner-cta-btn {
+    display: inline-block;
+    padding: 1rem 2rem;
+    background-color: #fbbf24;
+    /* Primary Color */
+    color: #1a1a1a;
+    font-weight: 700;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border: none;
+    cursor: pointer;
+}
+
+.banner-cta-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(251, 191, 36, 0.4);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 1024px) {
+    .interior-banner h1 {
+        font-size: 3rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .interior-banner {
+        height: 50vh;
+        /* Mobile Height */
+        justify-content: center;
+        text-align: center;
+    }
+
+    .interior-banner-content {
+        padding: 0 1.5rem;
+    }
+
+    .interior-banner h1 {
+        font-size: 2.25rem;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .interior-banner p {
+        font-size: 1rem;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .banner-cta-btn {
+        width: 100%;
+        display: block;
+        text-align: center;
+    }
+}
