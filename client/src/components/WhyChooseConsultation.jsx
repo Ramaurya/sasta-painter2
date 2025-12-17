@@ -127,7 +127,7 @@ const WhyChooseConsultation = () => {
                     >
                         <img
                             src={isMobile ? whyChooseConsultationData.imageMobile : whyChooseConsultationData.imageDesktop}
-                            alt="Consultation — AapkaPainter"
+                            alt="Consultation — SastaPainter"
                             className="wcc-main-img"
                             loading="lazy"
                             decoding="async"

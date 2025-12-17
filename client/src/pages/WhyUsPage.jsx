@@ -20,6 +20,7 @@ import {
     timelineImages,
     ctaData
 } from '../data/whyUsData';
+import TestimonialsSection from '../components/TestimonialsSection';
 
 import './whyUsPage.css';
 
@@ -163,33 +164,7 @@ const WhyUsPage = () => {
             <BrandsGrid />
 
             {/* 5. TESTIMONIALS */}
-            <section className="why-testimonials">
-                <div className="section-container">
-                    <div className="section-header">
-                        <h2 className="section-heading">What Our Customers Say</h2>
-                    </div>
-
-                    <motion.div
-                        className="testimonial-grid"
-                        variants={staggerContainer}
-                        initial="hidden"
-                        whileInView="visible"
-                        viewport={{ once: true }}
-                    >
-                        {[
-                            { name: "Rahul Sharma", text: "Incredible attention to detail. The team was punctual, clean, and the finish is just smooth as silk!" },
-                            { name: "Priya Menon", text: "I loved the color consultation. They helped me pick shades I wouldn't have thought of, and my living room looks huge now." },
-                            { name: "Amit Verma", text: "Professionalism at its best. They masked everything perfectly and left zero mess behind. Highly recommended." },
-                            { name: "Sita Reddy", text: "Used Asian Paints Royale as promised. Genuine products and genuine people. Great job AapkaPainter!" }
-                        ].map((t, i) => (
-                            <motion.div key={i} className="testimonial-card" variants={fadeInUp}>
-                                <p className="testimonial-text">"{t.text}"</p>
-                                <div className="testimonial-author">- {t.name}</div>
-                            </motion.div>
-                        ))}
-                    </motion.div>
-                </div>
-            </section>
+            <TestimonialsSection />
 
             {/* 6. CTA SECTION */}
             <section className="why-cta">

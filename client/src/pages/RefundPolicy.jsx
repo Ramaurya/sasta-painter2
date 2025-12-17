@@ -22,7 +22,7 @@ const RefundPolicy = () => {
                     <section className="refund-section">
                         <h2>1. Overview</h2>
                         <p>
-                            At AapkaPainter, we strive to ensure that every painting project is completed to your satisfaction.
+                            At SastaPainter, we strive to ensure that every painting project is completed to your satisfaction.
                             However, we understand that circumstances may change. This Refund & Cancellation Policy outlines the conditions under which you may cancel your booking and the eligibility criteria for refunds.
                         </p>
                         <p>
@@ -82,7 +82,7 @@ const RefundPolicy = () => {
                             If you have any questions or confusion regarding our Refund & Cancellation Policy, please reach out to us before making a payment.
                         </p>
                         <p>
-                            <strong>AapkaPainter Support</strong><br />
+                            <strong>SastaPainter Support</strong><br />
                             Email: hello@aapkapainter.clone<br />
                             Phone: +91 98765 43210
                         </p>

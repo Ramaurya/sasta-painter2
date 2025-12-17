@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api';
 import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 import ServicesBanner from '../components/ServicesBanner';
@@ -12,7 +12,7 @@ const Services = () => {
     useEffect(() => {
         const fetchServices = async () => {
             try {
-                const res = await axios.get('/api/services');
+                const res = await api.get('/services');
                 if (res.data.success) {
                     setServices(res.data.services);
                 }

@@ -7,19 +7,27 @@
  */
 
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import Layout from './components/Layout';
 import ScrollToTop from './components/ScrollToTop';
+import { LoaderProvider } from './context/LoaderContext';
+import GlobalLoader from './components/GlobalLoader';
+import AxiosInterceptor from './components/AxiosInterceptor';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import MyBookings from './pages/MyBookings';
 import Book from './pages/Book';
+import BookSiteVisit from './pages/BookSiteVisit';
+import BlogPage from './pages/BlogPage';
 import Services from './pages/Services';
 import WhyUsPage from './pages/WhyUsPage';
+import FAQPage from './pages/FAQPage';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminUsers from './pages/AdminUsers'; // [NEW]
 import AdminBookings from './pages/AdminBookings'; // [NEW]
+import AdminPainters from './pages/AdminPainters'; // [NEW]
+import ComingSoon from './pages/ComingSoon'; // [NEW]
 import InteriorPainting from './pages/services/InteriorPainting';
 import ExteriorPainting from './pages/services/ExteriorPainting';
 import RentalPainting from './pages/services/RentalPainting';
@@ -36,11 +44,14 @@ import useAuth from './hooks/useAuth.jsx';
 // Helper component for Protected Routes
 const ProtectedRoute = ({ children, adminOnly = false }) => {
   const { user, loading } = useAuth();
-  if (loading) return <div>Loading...</div>; // Or a spinner
-  if (!user) return <Login />; // Force login if not authenticated
+  const location = useLocation();
+
+  if (loading) return null; // Global Loader handles the visuals
+  if (!user) return <Navigate to="/login" state={{ from: location }} replace />;
   if (adminOnly && !user.isAdmin) return <div>Access Denied</div>;
   return children;
 };
+
 
 // Main App Structure
 function AppContent() {
@@ -73,6 +84,14 @@ function AppContent() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/admin/painters"
+          element={
+            <ProtectedRoute adminOnly={true}>
+              <AdminPainters />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Public/App Routes - Wrapped in Layout */}
         <Route path="/*" element={
@@ -84,6 +103,7 @@ function AppContent() {
 
               <Route path="/book" element={<Book />} />
               <Route path="/services" element={<Services />} />
+              <Route path="/blog" element={<BlogPage />} />
 
               {/* Service Detail Routes */}
               <Route path="/services/Interior-Painting" element={<InteriorPainting />} />
@@ -97,6 +117,12 @@ function AppContent() {
               <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
               <Route path="/privacy-policy" element={<PrivacyPolicy />} />
               <Route path="/refund-policy" element={<RefundPolicy />} />
+              <Route path="/faq" element={<FAQPage />} />
+              <Route path="/estimate" element={<ComingSoon type="estimate" />} />
+              <Route path="/ios-app" element={<ComingSoon type="ios" />} />
+              <Route path="/android-app" element={<ComingSoon type="android" />} />
+              <Route path="/calculator" element={<ComingSoon type="calculator" />} />
+              <Route path="/visualizer" element={<ComingSoon type="visualizer" />} />
 
               {/* Protected Routes */}
               <Route
@@ -104,6 +130,14 @@ function AppContent() {
                 element={
                   <ProtectedRoute>
                     <MyBookings />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/book-site-visit"
+                element={
+                  <ProtectedRoute>
+                    <BookSiteVisit />
                   </ProtectedRoute>
                 }
               />
@@ -118,11 +152,17 @@ function AppContent() {
   );
 }
 
+
+
 function App() {
   return (
-    <AuthProvider>
-      <AppContent />
-    </AuthProvider>
+    <LoaderProvider>
+      <AxiosInterceptor />
+      <GlobalLoader />
+      <AuthProvider>
+        <AppContent />
+      </AuthProvider>
+    </LoaderProvider>
   );
 }
 

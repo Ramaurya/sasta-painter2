@@ -22,13 +22,20 @@ exports.getServices = async (req, res) => {
     }
 };
 
+const SiteVisit = require('../models/SiteVisit'); // Import the new model
+
 exports.postBooking = async (req, res) => {
     try {
-        const { name, phone, email, city, service_type, message } = req.body;
+        const { name, phone, email, city, service_type, message, address, pincode, preferred_date } = req.body;
 
         // Basic Validation
         if (!['Delhi', 'Noida'].includes(city)) {
             return res.status(400).json({ success: false, error: 'Service available only in Delhi and Noida.' });
+        }
+
+        // Pincode validation (Basic)
+        if (!/^\d{6}$/.test(pincode)) {
+            return res.status(400).json({ success: false, error: 'Invalid Pincode. It must be 6 digits.' });
         }
 
         const newInquiry = new Inquiry({
@@ -38,6 +45,9 @@ exports.postBooking = async (req, res) => {
             city,
             service_type,
             message,
+            address,
+            pincode,
+            preferred_date,
             user: req.session.user ? req.session.user._id : null
         });
 
@@ -45,6 +55,28 @@ exports.postBooking = async (req, res) => {
         res.json({ success: true, message: 'Booking submitted successfully' });
     } catch (err) {
         console.error(err);
+        res.status(500).json({ success: false, error: 'Server Error' });
+    }
+};
+
+exports.postSiteVisit = async (req, res) => {
+    try {
+        const { name, phone, city } = req.body;
+
+        if (!name || !phone || !city) {
+            return res.status(400).json({ success: false, error: 'Please fill in all fields.' });
+        }
+
+        const newSiteVisit = new SiteVisit({
+            name,
+            phone,
+            city
+        });
+
+        await newSiteVisit.save();
+        res.json({ success: true, message: 'Site Visit Booked Successfully!' });
+    } catch (err) {
+        console.error('Site Visit Error:', err);
         res.status(500).json({ success: false, error: 'Server Error' });
     }
 };
@@ -138,6 +170,83 @@ exports.deleteBooking = async (req, res) => {
         res.json({ success: true, message: 'Booking deleted' });
     } catch (err) {
         console.error(err);
+        res.status(500).json({ success: false, error: 'Server Error' });
+    }
+};
+
+exports.submitReview = async (req, res) => {
+    try {
+        const { inquiryId, rating, comment } = req.body;
+        // Check if user is logged in (session based)
+        const userId = req.session.user ? req.session.user._id : null;
+
+        if (!userId) {
+            return res.status(401).json({ success: false, error: 'Unauthorized' });
+        }
+
+        // Verify booking ownership and status
+        const Inquiry = require('../models/Inquiry');
+        const booking = await Inquiry.findOne({ _id: inquiryId, user: userId });
+
+        if (!booking) {
+            return res.status(404).json({ success: false, error: 'Booking not found' });
+        }
+
+        if (booking.status !== 'Completed') {
+            return res.status(400).json({ success: false, error: 'Can only review completed bookings' });
+        }
+
+        // Check if already reviewed
+        const Review = require('../models/Review');
+        const existingReview = await Review.findOne({ inquiry: inquiryId });
+        if (existingReview) {
+            return res.status(400).json({ success: false, error: 'You have already reviewed this service' });
+        }
+
+        const newReview = await Review.create({
+            user: userId,
+            inquiry: inquiryId,
+            rating: Number(rating),
+            comment
+        });
+
+        // Optional: Update Painter rating if assigned
+        if (booking.assignedPainter) {
+            const Painter = require('../models/Painter');
+            const painter = await Painter.findById(booking.assignedPainter);
+            if (painter) {
+                // Handle case where fields might be undefined/string
+                const currentRating = Number(painter.rating) || 0;
+                const currentCount = Number(painter.reviews_count) || 0;
+
+                const totalRating = (currentRating * currentCount) + Number(rating);
+                const newCount = currentCount + 1;
+                painter.rating = totalRating / newCount;
+                painter.reviews_count = newCount;
+                await painter.save();
+            }
+        }
+
+        res.status(201).json({ success: true, message: 'Review submitted successfully', review: newReview });
+
+    } catch (error) {
+        console.error('Submit Review Error:', error);
+        res.status(500).json({ success: false, error: 'Server Error' });
+    }
+};
+
+exports.getPublicReviews = async (req, res) => {
+    try {
+        const Review = require('../models/Review');
+        // Fetch top 6 recent public reviews, populate user name
+        const reviews = await Review.find({ isPublic: true })
+            .sort({ createdAt: -1 })
+            .limit(6)
+            .populate('user', 'username');
+
+        res.json({ success: true, reviews });
+    } catch (error) {
+        console.error('Get Reviews Error:', error);
         res.status(500).json({ success: false, error: 'Server Error' });
     }
 };

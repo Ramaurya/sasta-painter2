@@ -38,14 +38,6 @@ const ServiceProcess = ({ steps, title }) => {
                 </motion.div>
 
                 <div className="process-timeline-wrapper">
-                    {/* Background Line */}
-                    <motion.div
-                        className="process-line"
-                        initial={{ scaleX: 0, originX: 0 }}
-                        whileInView={{ scaleX: 1 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 1.5, ease: "easeInOut" }}
-                    />
 
                     <motion.div
                         className="process-timeline"

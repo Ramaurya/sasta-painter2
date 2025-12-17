@@ -7,8 +7,8 @@
 
 export const howItWorksData = {
     label: "HOW IT WORKS",
-    headline: "How It Works — Renovation in 6 Simple Steps",
-    subheading: "AapkaPainter will help renovate your house in six clear steps — from site inspection to final handover. Book your inspection today!",
+    headline: "How It Works: Renovation in 6 Simple Steps",
+    subheading: "SastaPainter will help renovate your house in six clear steps — from site inspection to final handover. Book your inspection today!",
     steps: [
         {
             id: 1,

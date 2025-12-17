@@ -24,14 +24,30 @@ const inquirySchema = new mongoose.Schema({
     message: {
         type: String
     },
+    address: {
+        type: String,
+        required: true // Address is crucial for a site visit
+    },
+    pincode: {
+        type: String,
+        required: true,
+        match: [/^\d{6}$/, 'Please enter a valid 6-digit Pincode']
+    },
+    preferred_date: {
+        type: Date
+    },
     status: {
         type: String,
         default: 'Pending',
-        enum: ['Pending', 'Contacted', 'Completed']
+        enum: ['Pending', 'Contacted', 'Scheduled', 'In_Progress', 'Inspection_Done', 'Completed', 'Cancelled']
     },
     user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
+    },
+    assignedPainter: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Painter'
     },
     editHistory: [{
         timestamp: { type: Date, default: Date.now },

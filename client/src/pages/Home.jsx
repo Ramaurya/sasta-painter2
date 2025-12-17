@@ -5,8 +5,11 @@ import HowItWorks from '../components/HowItWorks';
 import WhyChooseConsultation from '../components/WhyChooseConsultation';
 import ServicesSection from '../components/ServicesSection';
 import BookingForm from '../components/BookingForm';
-import axios from 'axios';
+import FAQ from '../components/FAQ';
+import api from '../api';
 import BrandsGrid from '../components/BrandsGrid';
+import BlogSection from '../components/BlogSection';
+import TestimonialsSection from '../components/TestimonialsSection';
 
 const Home = () => {
     const [services, setServices] = useState([]);
@@ -14,7 +17,7 @@ const Home = () => {
     useEffect(() => {
         const fetchServices = async () => {
             try {
-                const res = await axios.get('/api/');
+                const res = await api.get('/');
                 if (res.data.success) {
                     setServices(res.data.services);
                 }
@@ -34,6 +37,9 @@ const Home = () => {
             <ServicesSection services={services} />
             <BrandsGrid />
             <BookingForm />
+            <TestimonialsSection />
+            <FAQ />
+            <BlogSection />
         </div>
     );
 };

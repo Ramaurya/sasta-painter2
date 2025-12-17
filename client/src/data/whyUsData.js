@@ -8,7 +8,7 @@
 
 // HERO SECTION
 export const heroData = {
-    accent: "Why AapkaPainter",
+    accent: "Why SastaPainter",
     title: "Professional Painters, Trusted Brands, Exceptional Results",
     subtitle: "We transform homes with precision, quality, and unmatched service excellence. From expert consultation to post-service support, our process ensures your project is smooth, worry-free, and beautifully executed.",
     image: "/images/whychooseus.webp" // Using existing best fit; replace if 'hero1.webp' added later

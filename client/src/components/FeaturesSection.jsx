@@ -29,7 +29,7 @@ const FeaturesSection = () => {
             <div className="container">
                 <div className="section-title">
                     <span>Why Choose Us</span>
-                    <h2>The AapkaPainter Advantage</h2>
+                    <h2>The SastaPainter Advantage</h2>
                 </div>
                 <motion.div
                     className="grid"

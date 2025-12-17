@@ -1,41 +1,45 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api';
 import { motion } from 'framer-motion';
-import { FaArrowLeft, FaSearch } from 'react-icons/fa';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { FaClipboardCheck, FaHardHat, FaSearch, FaFilter } from 'react-icons/fa';
+import { useSearchParams } from 'react-router-dom';
+import AdminLayout from '../components/AdminLayout';
 
 const AdminBookings = () => {
-    const [bookings, setBookings] = useState([]);
+    const [activeTab, setActiveTab] = useState('bookings');
+    const [data, setData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchParams] = useSearchParams();
-    const navigate = useNavigate();
 
     const statusFilter = searchParams.get('status') || '';
     const [searchTerm, setSearchTerm] = useState('');
+    const [painters, setPainters] = useState([]);
 
     useEffect(() => {
-        fetchBookings();
-    }, [statusFilter]);
+        fetchData();
+        fetchPainters();
+    }, [activeTab, statusFilter]);
 
-    // Debounce search could be added, but manual trigger or short delay is fine for now
     useEffect(() => {
         const timer = setTimeout(() => {
-            fetchBookings();
+            fetchData();
         }, 500);
         return () => clearTimeout(timer);
     }, [searchTerm]);
 
-    const fetchBookings = async () => {
+    const fetchData = async () => {
         setLoading(true);
         try {
-            const res = await axios.get('/api/admin/bookings', {
+            const endpoint = activeTab === 'bookings' ? '/admin/bookings' : '/admin/site-visits';
+            const res = await api.get(endpoint, {
+                triggerLoader: true,
                 params: {
                     status: statusFilter,
                     search: searchTerm
                 }
             });
             if (res.data.success) {
-                setBookings(res.data.inquiries);
+                setData(activeTab === 'bookings' ? res.data.inquiries : res.data.siteVisits);
             }
         } catch (err) {
             console.error(err);
@@ -44,122 +48,231 @@ const AdminBookings = () => {
         }
     };
 
+    const fetchPainters = async () => {
+        try {
+            const res = await api.get('/admin/painters');
+            if (res.data.success) {
+                setPainters(res.data.painters);
+            }
+        } catch (err) {
+            console.error('Failed to fetch painters', err);
+        }
+    };
+
     const handleStatusUpdate = async (id, newStatus) => {
         try {
-            await axios.post(`/api/admin/inquiries/${id}/update`, { status: newStatus });
-            setBookings(bookings.map(i => i._id === id ? { ...i, status: newStatus } : i));
+            const endpoint = activeTab === 'bookings'
+                ? `/admin/bookings/${id}/status`
+                : `/admin/site-visits/${id}/status`;
+
+            await api.put(endpoint, { status: newStatus });
+            setData(data.map(i => i._id === id ? { ...i, status: newStatus } : i));
         } catch (err) {
             alert('Failed to update status');
         }
     };
 
+    const handleAssignPainter = async (bookingId, painterId) => {
+        try {
+            await api.put(`/admin/bookings/${bookingId}/assign`, { painterId });
+            setData(data.map(i => i._id === bookingId ? { ...i, assignedPainter: painters.find(p => p._id === painterId) } : i));
+            alert('Painter assigned successfully');
+        } catch (err) {
+            alert('Failed to assign painter');
+        }
+    };
+
+    // Styling constants for the premium feel
+    const tabStyle = (isActive) => ({
+        padding: '1rem 2rem',
+        borderRadius: '16px',
+        border: 'none',
+        background: isActive ? '#2563eb' : 'white',
+        color: isActive ? 'white' : '#64748b',
+        fontWeight: '600',
+        cursor: 'pointer',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '12px',
+        fontSize: '1rem',
+        boxShadow: isActive ? '0 10px 20px -5px rgba(37, 99, 235, 0.4)' : '0 4px 6px -1px rgba(0,0,0,0.05)',
+        transition: 'all 0.3s'
+    });
+
+    const statusColor = (status) => {
+        switch (status) {
+            case 'Completed': return { bg: '#dcfce7', text: '#166534' };
+            case 'Contacted': return { bg: '#dbeafe', text: '#1e40af' };
+            case 'Scheduled': return { bg: '#e0e7ff', text: '#3730a3' };
+            case 'In_Progress': return { bg: '#faf5ff', text: '#6b21a8' };
+            case 'Cancelled': return { bg: '#f1f5f9', text: '#64748b' };
+            default: return { bg: '#fef3c7', text: '#92400e' }; // Pending
+        }
+    };
+
     return (
-        <div style={{ minHeight: '100vh', backgroundColor: '#f1f5f9', padding: '2rem', fontFamily: "'Inter', sans-serif" }}>
-            <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-                <button
-                    onClick={() => navigate('/admin/dashboard')}
-                    style={{ display: 'flex', alignItems: 'center', gap: '8px', border: 'none', background: 'none', cursor: 'pointer', marginBottom: '1rem', color: '#64748b', fontSize: '1rem' }}
-                >
-                    <FaArrowLeft /> Back to Dashboard
-                </button>
+        <AdminLayout title="Bookings & Requests">
+            {/* Controls Section */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+                <div style={{ display: 'flex', gap: '1.5rem' }}>
+                    <button onClick={() => setActiveTab('bookings')} style={tabStyle(activeTab === 'bookings')}>
+                        <FaClipboardCheck size={20} /> Project Bookings
+                    </button>
+                    <button onClick={() => setActiveTab('site-visits')} style={tabStyle(activeTab === 'site-visits')}>
+                        <FaHardHat size={20} /> Site Visits
+                    </button>
+                </div>
 
-                <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    style={{ backgroundColor: 'white', padding: '1.5rem', borderRadius: '16px', boxShadow: '0 4px 6px rgba(0,0,0,0.02)' }}
-                >
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
-                        <h2 style={{ fontSize: '1.5rem', fontWeight: '700', color: '#1e293b', margin: 0 }}>
-                            {statusFilter ? `${statusFilter} Bookings` : 'All Bookings'}
-                        </h2>
+                <div style={{ position: 'relative' }}>
+                    <FaSearch style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
+                    <input
+                        type="text"
+                        placeholder="Search by name, city..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        style={{
+                            padding: '1rem 1.5rem 1rem 3rem',
+                            borderRadius: '16px',
+                            border: '1px solid #e2e8f0',
+                            fontSize: '0.95rem',
+                            width: '320px',
+                            outline: 'none',
+                            boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)'
+                        }}
+                    />
+                </div>
+            </div>
 
-                        <div style={{ position: 'relative' }}>
-                            <FaSearch style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
-                            <input
-                                type="text"
-                                placeholder="Search by email..."
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                                style={{
-                                    padding: '0.6rem 1rem 0.6rem 2.5rem',
-                                    borderRadius: '8px',
-                                    border: '1px solid #e2e8f0',
-                                    fontSize: '0.9rem',
-                                    width: '250px',
-                                    outline: 'none'
-                                }}
-                            />
-                        </div>
-                    </div>
+            {/* Table Card */}
+            <motion.div
+                initial={{ opacity: 0, scale: 0.98 }}
+                animate={{ opacity: 1, scale: 1 }}
+                style={{
+                    backgroundColor: 'white',
+                    borderRadius: '24px',
+                    padding: '2rem',
+                    boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02)',
+                    overflow: 'hidden'
+                }}
+            >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '2rem', paddingBottom: '1rem', borderBottom: '1px solid #f1f5f9' }}>
+                    <FaFilter color="#64748b" />
+                    <span style={{ fontWeight: 600, color: '#64748b' }}>
+                        Showing {data.length} {activeTab === 'bookings' ? 'Bookings' : 'Requests'}
+                        {statusFilter && ` (${statusFilter})`}
+                    </span>
+                </div>
 
-                    {loading ? (
-                        <div style={{ textAlign: 'center', padding: '2rem', color: '#64748b' }}>Loading...</div>
-                    ) : (
-                        <div style={{ overflowX: 'auto' }}>
-                            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
-                                <thead>
-                                    <tr style={{ borderBottom: '2px solid #e2e8f0' }}>
-                                        <th style={{ padding: '1rem', color: '#64748b' }}>Name</th>
-                                        <th style={{ padding: '1rem', color: '#64748b' }}>Service</th>
-                                        <th style={{ padding: '1rem', color: '#64748b' }}>City</th>
-                                        <th style={{ padding: '1rem', color: '#64748b' }}>Date</th>
-                                        <th style={{ padding: '1rem', color: '#64748b' }}>Status</th>
-                                        <th style={{ padding: '1rem', color: '#64748b' }}>Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {bookings.length === 0 ? (
-                                        <tr><td colSpan="6" style={{ padding: '2rem', textAlign: 'center', color: '#94a3b8' }}>No bookings found</td></tr>
-                                    ) : (
-                                        bookings.map(booking => (
-                                            <tr key={booking._id} style={{ borderBottom: '1px solid #e2e8f0' }}>
-                                                <td style={{ padding: '1rem' }}>
-                                                    <div style={{ fontWeight: '600', color: '#334155' }}>{booking.name}</div>
-                                                    <div style={{ fontSize: '0.8rem', color: '#64748b' }}>{booking.email}</div>
-                                                </td>
-                                                <td style={{ padding: '1rem', color: '#334155' }}>{booking.service_type}</td>
-                                                <td style={{ padding: '1rem', color: '#334155' }}>{booking.city}</td>
-                                                <td style={{ padding: '1rem', color: '#64748b' }}>{new Date(booking.createdAt).toLocaleDateString()}</td>
-                                                <td style={{ padding: '1rem' }}>
-                                                    <span style={{
-                                                        padding: '0.25rem 0.5rem',
-                                                        borderRadius: '999px',
-                                                        fontSize: '0.8rem',
-                                                        fontWeight: 600,
-                                                        backgroundColor: booking.status === 'Completed' ? '#dcfce7' : booking.status === 'Contacted' ? '#dbeafe' : booking.status === 'Cancelled' ? '#f1f5f9' : '#fef3c7',
-                                                        color: booking.status === 'Completed' ? '#166534' : booking.status === 'Contacted' ? '#2563eb' : booking.status === 'Cancelled' ? '#64748b' : '#d97706',
-                                                    }}>
-                                                        {booking.status || 'Pending'}
+                {loading ? null : (
+                    <div style={{ overflowX: 'auto' }}>
+                        <table style={{ width: '100%', borderCollapse: 'separate', borderSpacing: '0 1rem' }}>
+                            <thead>
+                                <tr>
+                                    <th style={{ textAlign: 'left', padding: '1rem', color: '#94a3b8', fontWeight: 600, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Client Details</th>
+                                    {activeTab === 'bookings' && <th style={{ textAlign: 'left', padding: '1rem', color: '#94a3b8', fontWeight: 600, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Service Type</th>}
+                                    <th style={{ textAlign: 'left', padding: '1rem', color: '#94a3b8', fontWeight: 600, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Location</th>
+                                    <th style={{ textAlign: 'left', padding: '1rem', color: '#94a3b8', fontWeight: 600, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Date</th>
+
+                                    {activeTab === 'bookings' && <th style={{ textAlign: 'left', padding: '1rem', color: '#94a3b8', fontWeight: 600, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Assigned Painter</th>}
+
+                                    <th style={{ textAlign: 'left', padding: '1rem', color: '#94a3b8', fontWeight: 600, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Status</th>
+                                    <th style={{ textAlign: 'left', padding: '1rem', color: '#94a3b8', fontWeight: 600, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {data.length === 0 ? (
+                                    <tr><td colSpan={7} style={{ textAlign: 'center', padding: '3rem', color: '#94a3b8' }}>No records found matching your criteria.</td></tr>
+                                ) : (
+                                    data.map(item => (
+                                        <tr key={item._id} style={{ background: '#f8fafc', borderRadius: '12px', transition: 'transform 0.2s' }}>
+                                            <td style={{ padding: '1.25rem', borderTopLeftRadius: '12px', borderBottomLeftRadius: '12px' }}>
+                                                <div style={{ fontWeight: '700', color: '#1e293b', fontSize: '1rem' }}>{item.name}</div>
+                                                <div style={{ fontSize: '0.85rem', color: '#64748b', marginTop: '4px' }}>{item.phone}</div>
+                                                {item.email && <div style={{ fontSize: '0.85rem', color: '#64748b' }}>{item.email}</div>}
+                                            </td>
+
+                                            {activeTab === 'bookings' && (
+                                                <td style={{ padding: '1.25rem' }}>
+                                                    <span style={{ background: 'white', padding: '6px 12px', borderRadius: '8px', border: '1px solid #e2e8f0', fontWeight: 600, fontSize: '0.9rem', color: '#475569' }}>
+                                                        {item.service_type}
                                                     </span>
                                                 </td>
-                                                <td style={{ padding: '1rem' }}>
+                                            )}
+
+                                            <td style={{ padding: '1.25rem', color: '#475569', fontWeight: 500 }}>{item.city}</td>
+
+                                            <td style={{ padding: '1.25rem', color: '#64748b', fontSize: '0.9rem' }}>
+                                                {new Date(item.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}
+                                            </td>
+
+                                            {activeTab === 'bookings' && (
+                                                <td style={{ padding: '1.25rem' }}>
                                                     <select
-                                                        value={booking.status || 'Pending'}
-                                                        onChange={(e) => handleStatusUpdate(booking._id, e.target.value)}
+                                                        value={item.assignedPainter?._id || item.assignedPainter || ''}
+                                                        onChange={(e) => handleAssignPainter(item._id, e.target.value)}
                                                         style={{
-                                                            padding: '0.25rem',
+                                                            padding: '0.6rem',
+                                                            borderRadius: '8px',
+                                                            border: '1px solid #cbd5e1',
+                                                            backgroundColor: 'white',
+                                                            width: '100%',
                                                             fontSize: '0.9rem',
-                                                            borderRadius: '4px',
-                                                            border: '1px solid #cbd5e1'
+                                                            cursor: 'pointer'
                                                         }}
                                                     >
-                                                        <option value="Pending">Pending</option>
-                                                        <option value="Contacted">Contacted</option>
-                                                        <option value="In Progress">In Progress</option>
-                                                        <option value="Completed">Completed</option>
-                                                        <option value="Cancelled">Cancelled</option>
+                                                        <option value="">Unassigned</option>
+                                                        {painters.map(p => (
+                                                            <option key={p._id} value={p._id}>{p.name}</option>
+                                                        ))}
                                                     </select>
                                                 </td>
-                                            </tr>
-                                        ))
-                                    )}
-                                </tbody>
-                            </table>
-                        </div>
-                    )}
-                </motion.div>
-            </div>
-        </div>
+                                            )}
+
+                                            <td style={{ padding: '1.25rem' }}>
+                                                <div style={{
+                                                    display: 'inline-block',
+                                                    padding: '6px 12px',
+                                                    borderRadius: '20px',
+                                                    fontSize: '0.85rem',
+                                                    fontWeight: 700,
+                                                    ...statusColor(item.status)
+                                                }}>
+                                                    {item.status || 'Pending'}
+                                                </div>
+                                            </td>
+
+                                            <td style={{ padding: '1.25rem', borderTopRightRadius: '12px', borderBottomRightRadius: '12px' }}>
+                                                <select
+                                                    value={item.status || 'Pending'}
+                                                    onChange={(e) => handleStatusUpdate(item._id, e.target.value)}
+                                                    style={{
+                                                        padding: '0.6rem',
+                                                        borderRadius: '8px',
+                                                        border: '1px solid #cbd5e1',
+                                                        backgroundColor: 'white',
+                                                        fontSize: '0.9rem',
+                                                        cursor: 'pointer',
+                                                        color: '#475569'
+                                                    }}
+                                                >
+                                                    <option value="Pending">Pending</option>
+                                                    <option value="Contacted">Contacted</option>
+                                                    <option value="Scheduled">Scheduled</option>
+                                                    <option value="Inspection_Done">Inspection Done</option>
+                                                    {activeTab === 'bookings' && <option value="In_Progress">In Progress</option>}
+                                                    <option value="Completed">Completed</option>
+                                                    <option value="Cancelled">Cancelled</option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                    ))
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
+                )}
+            </motion.div>
+        </AdminLayout>
     );
 };
 

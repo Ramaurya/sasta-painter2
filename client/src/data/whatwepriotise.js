@@ -1,12 +1,12 @@
 /**
  * whyChooseUs.js
  * 
- * Enriched copy for The AapkaPainter Advantage section.
+ * Enriched copy for The SastaPainter Advantage section.
  */
 
 export const whyChooseUsData = {
     label: "WHAT WE PRIOTISE ON?",
-    headline: "The AapkaPainter Priotisation",
+    headline: "The SastaPainter Priotisation",
     intro: "Precision, professionalism, and color expertise — delivered on time. From color consultation to flawless finishes, we combine trusted craftsmanship with modern techniques so your space looks extraordinary and lasts.",
     features: [
         {

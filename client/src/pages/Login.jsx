@@ -7,8 +7,8 @@
  */
 
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import api from '../api';
 import { motion } from 'framer-motion';
 import { GoogleLogin } from '@react-oauth/google'; // 🟢 Import Google Library
 import { jwtDecode } from "jwt-decode";            // 🟢 Import JWT Decoder
@@ -18,6 +18,8 @@ import './auth.css';
 const Login = () => {
     const { setUser } = useAuth();
     const navigate = useNavigate();
+    const location = useLocation();
+    const from = location.state?.from?.pathname || '/';
 
     const [formData, setFormData] = useState({ email: '', password: '' });
     const [error, setError] = useState('');
@@ -32,14 +34,14 @@ const Login = () => {
             const token = credentialResponse.credential;
 
             // 2. Send token to backend to save/verify user
-            const res = await axios.post('/api/auth/google', { token });
+            const res = await api.post('/auth/google', { token });
 
             if (res.data.success) {
                 // 3. Update App State
                 setUser(res.data.user);
 
                 // 4. Redirect
-                navigate(DASHBOARD_ROUTE);
+                navigate(from, { replace: true });
             }
 
         } catch (err) {
@@ -59,7 +61,7 @@ const Login = () => {
 
         try {
             // 1. Attempt Regular Login
-            let res = await axios.post('/api/login', formData);
+            let res = await api.post('/login', formData);
             if (res.data.success) {
                 setUser(res.data.user);
 
@@ -67,14 +69,14 @@ const Login = () => {
                 if (res.data.user.isAdmin) {
                     navigate('/admin/dashboard');
                 } else {
-                    navigate(DASHBOARD_ROUTE);
+                    navigate(from, { replace: true });
                 }
                 return;
             }
         } catch (err) {
             // 2. Fallback: Try Admin Login logic
             try {
-                const adminRes = await axios.post('/api/admin/login', { username: formData.email, password: formData.password });
+                const adminRes = await api.post('/admin/login', { username: formData.email, password: formData.password });
                 if (adminRes.data.success) {
                     setUser(adminRes.data.user);
                     navigate('/admin/dashboard');
@@ -103,7 +105,7 @@ const Login = () => {
             >
                 <div className="auth-overlay"></div>
                 <div className="auth-brand-content">
-                    <h1>Welcome Back to AapkaPainter</h1>
+                    <h1>Welcome Back to SastaPainter</h1>
                     <p>Trusted painters. Beautiful homes. Hassle-free experience.</p>
                 </div>
             </motion.div>

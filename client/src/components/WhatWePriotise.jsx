@@ -119,7 +119,7 @@ const WhyChooseUs = () => {
                     <figure className="wcu-image-wrapper">
                         <motion.img
                             src="/images/whychooseus.webp"
-                            alt="Why Choose Us — AapkaPainter Advantage"
+                            alt="Why Choose Us — SastaPainter Advantage"
                             className="wcu-img"
                             loading="lazy"
                             decoding="async"

@@ -3,12 +3,14 @@ import { GoogleGenerativeAI } from "@google/generative-ai"; // IMPORT THE SDK
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaRobot, FaPaperPlane, FaTimes, FaCommentDots } from 'react-icons/fa';
 
-// ⚠️ PASTE YOUR REAL API KEY HERE
-const GEMINI_API_KEY = "AIzaSyBi9IwJb49M_tFrQJAXVR8XijxHuOcqeFM";
 
+
+
+// Access API key from Environment Variable
+const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 // 1. Define your website's knowledge base
 const WEBSITE_CONTEXT = `
-You are the official AI support assistant for **AapkaPainter (also known as Sasta Painter)**,
+You are the official AI support assistant for **SastaPainter (also known as Sasta Painter)**,
 a professional painting and home improvement service provider in India.
 
 Your role is to politely assist users, answer service-related questions,
@@ -17,7 +19,7 @@ and guide them toward booking a site inspection or consultation.
 ==============================
 ABOUT AAPKAPAINTER
 ==============================
-AapkaPainter provides affordable, professional painting and home improvement services
+SastaPainter provides affordable, professional painting and home improvement services
 for homes, apartments, villas, and commercial spaces.
 
 ==============================
@@ -78,7 +80,7 @@ AI RESPONSE RULES
 const AiChatWidget = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [messages, setMessages] = useState([
-        { id: 1, text: "Hi! I'm your AapkaPainter AI assistant. I'm powered by Google Gemini. Ask me anything about painting!", sender: 'ai' }
+        { id: 1, text: "Hi! I'm your SastaPainter AI assistant. I'm powered by Google Gemini. Ask me anything about painting!", sender: 'ai' }
     ]);
     const [inputText, setInputText] = useState('');
     const [isTyping, setIsTyping] = useState(false);
@@ -100,22 +102,22 @@ const AiChatWidget = () => {
         try {
             // 1. Initialize the Google AI Client
             const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
-            
+
             // 2. Select the Model
-            const model = genAI.getGenerativeModel({ model: "models/gemini-2.5-flash" , systemInstruction: WEBSITE_CONTEXT});
+            const model = genAI.getGenerativeModel({ model: "models/gemini-2.5-flash", systemInstruction: WEBSITE_CONTEXT });
 
             // 3. Generate Content
             const result = await model.generateContent(userText);
             const response = await result.response;
             const text = response.text();
-            
+
             return text;
 
         } catch (error) {
-    console.error("Detailed Error:", error);
-    // This will show the REAL error in the chat bubble
-    return `⚠️ DEBUG ERROR: ${error.message || error.toString()}`;
-}
+            console.error("Detailed Error:", error);
+            // This will show the REAL error in the chat bubble
+            return `⚠️ DEBUG ERROR: ${error.message || error.toString()}`;
+        }
     };
 
     const handleSend = async (e) => {

@@ -1,29 +1,19 @@
-/**
- * useAuth.jsx
- * 
- * Authentication Context + Hook
- * - Provides global 'user' state via Context API.
- * - 'AuthProvider' wraps the app in App.jsx.
- * - 'useAuth' hook allows components to consume auth state.
- * - Handles: login state updates, logout, session check.
- */
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import axios from 'axios';
-
-// Ensure cookies are sent with requests
-axios.defaults.withCredentials = true;
+import api from '../api';
+import { useLoader } from '../context/LoaderContext';
 
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
+    const { showLoader, hideLoader } = useLoader();
 
     // Fetch user session on mount
     const refreshUser = async () => {
+        showLoader();
         try {
-            const res = await axios.get('/api/check-auth');
+            const res = await api.get('/check-auth', { triggerLoader: true });
             if (res.data.isAuthenticated && res.data.user) {
                 setUser(res.data.user);
             } else {
@@ -34,6 +24,7 @@ export const AuthProvider = ({ children }) => {
             setUser(null);
         } finally {
             setLoading(false);
+            hideLoader();
         }
     };
 
@@ -44,7 +35,7 @@ export const AuthProvider = ({ children }) => {
     // Logout function
     const logout = async () => {
         try {
-            await axios.get('/api/logout');
+            await api.get('/logout');
             setUser(null);
         } catch (err) {
             console.error("Logout failed:", err);

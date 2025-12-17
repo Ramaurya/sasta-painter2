@@ -1,6 +1,6 @@
 import React from 'react';
 import { useGoogleLogin } from '@react-oauth/google';
-import axios from 'axios';
+import api from '../api';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { FcGoogle } from 'react-icons/fc';
@@ -14,7 +14,7 @@ const GoogleLoginButton = ({ text = "Continue with Google" }) => {
         onSuccess: async (tokenResponse) => {
             try {
                 const accessToken = tokenResponse.access_token;
-                const res = await axios.post('/api/auth/google', { token: accessToken, type: 'access_token' });
+                const res = await api.post('/auth/google', { token: accessToken, type: 'access_token' });
 
                 if (res.data.success) {
                     setUser(res.data.user);

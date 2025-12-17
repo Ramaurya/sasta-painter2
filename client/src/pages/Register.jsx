@@ -8,7 +8,7 @@
 
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../api';
 import { motion } from 'framer-motion';
 import useAuth from '../hooks/useAuth.jsx';
 import GoogleLoginButton from '../components/GoogleLoginButton';
@@ -37,7 +37,7 @@ const Register = () => {
 
         try {
             // Need to verify standard prop usage. Assuming simple POST API.
-            const res = await axios.post('/api/register', formData);
+            const res = await api.post('/register', formData);
             if (res.data.success) {
                 // Auto-login on success
                 // If the API returns the user object immediately, we can set it.
@@ -66,7 +66,7 @@ const Register = () => {
             >
                 <div className="auth-overlay"></div>
                 <div className="auth-brand-content">
-                    <h1>Create Your AapkaPainter Account</h1>
+                    <h1>Create Your SastaPainter Account</h1>
                     <p>Book professional painting services with confidence. Transform your home today.</p>
                 </div>
             </motion.div>

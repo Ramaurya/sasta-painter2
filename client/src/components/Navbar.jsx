@@ -19,6 +19,10 @@ const NAV_ITEMS = [
     { label: 'Home', path: '/' },
     { label: 'Services', path: '/services' },
     { label: 'Why Us', path: '/why-us' },
+    { label: 'FAQs', path: '/faq' },
+    { label: 'Blog', path: '/blog' },
+    // { label: 'Estimate', path: '/estimate' },
+    // { label: 'Mobile App', path: '/android-app' },
     { label: 'Contact', path: '/#contact' },
     { label: 'Interior Painting', path: '/services/Interior-Painting' },
     { label: 'Exterior Painting', path: '/services/Exterior-Painting' },
@@ -89,7 +93,7 @@ const Navbar = () => {
 
     const handleBookClick = () => {
         setIsMobileMenuOpen(false);
-        navigate('/book');
+        navigate('/book-site-visit');
     };
 
     const handleLogout = async () => {
@@ -110,8 +114,8 @@ const Navbar = () => {
         <nav className="navbar" role="navigation" aria-label="Main Navigation">
             <div className="nav-container">
                 {/* Logo */}
-                <Link to="/" className="nav-logo" aria-label="AapkaPainter Home" onClick={() => window.scrollTo(0, 0)}>
-                    <span className="logo-text">Aapka<span className="logo-accent">Painter</span></span>
+                <Link to="/" className="nav-logo" aria-label="SastaPainter Home" onClick={() => window.scrollTo(0, 0)}>
+                    <img src="/images/sasta-painter-icon.jpeg" alt="SastaPainter Logo" style={{ height: '80px', width: '130px', maxHeight: '100%' }} />
                 </Link>
 
                 {/* Desktop Nav Links */}

@@ -113,7 +113,7 @@ const HowItWorks = () => {
                 >
                     <img
                         src="/images/howitworksdesk.webp"
-                        alt="How It Works - Renovation Process in 6 Steps"
+                        alt="How It Works Renovation Process in 6 Steps"
                         className="hiw-img"
                         loading="lazy"
                         decoding="async"
