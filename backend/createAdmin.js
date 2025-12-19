@@ -1,12 +1,15 @@
+require('dotenv').config();
 const mongoose = require('mongoose');
 const User = require('./models/User');
 const bcrypt = require('bcryptjs');
 
-mongoose.connect('mongodb://127.0.0.1:27017/aapkapainter', {
+const mongoURI = process.env.MONGO_URI;
+
+mongoose.connect(mongoURI, {
     useNewUrlParser: true,
     useUnifiedTopology: true
 })
-    .then(() => console.log('MongoDB Connected'))
+    .then(() => console.log('MongoDB Connected to Atlas'))
     .catch(err => console.error(err));
 
 const createAdmin = async () => {
