@@ -21,7 +21,7 @@ const MongoStore = require('connect-mongo').default || require('connect-mongo');
 
 // Middleware
 app.use(cors({
-    origin: process.env.CLIENT_URL || 'http://localhost:5173',
+    origin: process.env.CLIENT_URL || 'https://sasta-painter2-frontend.onrender.com',
     credentials: true
 }));
 app.use(express.json()); // Allow JSON body parsing
