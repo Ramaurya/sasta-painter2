@@ -15,11 +15,13 @@ const inquirySchema = new mongoose.Schema({
     city: {
         type: String,
         enum: ['Delhi', 'Noida'],
-        required: true
+        required: true,
+        index: true
     },
     service_type: {
         type: String,
-        required: true
+        required: true,
+        index: true
     },
     message: {
         type: String
@@ -39,11 +41,13 @@ const inquirySchema = new mongoose.Schema({
     status: {
         type: String,
         default: 'Pending',
-        enum: ['Pending', 'Contacted', 'Scheduled', 'In_Progress', 'Inspection_Done', 'Completed', 'Cancelled']
+        enum: ['Pending', 'Contacted', 'Scheduled', 'In_Progress', 'Inspection_Done', 'Completed', 'Cancelled'],
+        index: true
     },
     user: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
+        ref: 'User',
+        index: true
     },
     assignedPainter: {
         type: mongoose.Schema.Types.ObjectId,

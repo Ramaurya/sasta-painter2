@@ -17,6 +17,8 @@ mongoose.connect(mongoURI, {
     .then(() => console.log('MongoDB Connected'))
     .catch(err => console.log('MongoDB Connection Error:', err));
 
+const MongoStore = require('connect-mongo').default || require('connect-mongo');
+
 // Middleware
 app.use(cors({
     origin: process.env.CLIENT_URL || 'http://localhost:5173',
@@ -29,6 +31,11 @@ app.use(session({
     secret: 'secretKey',
     resave: false,
     saveUninitialized: false,
+    store: MongoStore.create({
+        mongoUrl: mongoURI,
+        collectionName: 'sessions', // Name of the collection to store sessions in
+        ttl: 24 * 60 * 60 // 1 day in seconds
+    }),
     cookie: {
         secure: false, // Set to true if using HTTPS
         httpOnly: true,

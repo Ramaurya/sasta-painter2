@@ -12,6 +12,7 @@ const MyBookings = () => {
     const [reviewModal, setReviewModal] = useState({ show: false, bookingId: null });
     const [rating, setRating] = useState(5);
     const [comment, setComment] = useState('');
+    const [activeTab, setActiveTab] = useState('estimates'); // 'estimates' or 'site_visits'
 
     useEffect(() => {
         fetchBookings();
@@ -71,6 +72,15 @@ const MyBookings = () => {
         }
     };
 
+    // Filter logic
+    const filteredBookings = bookings.filter(b => {
+        if (activeTab === 'estimates') {
+            return b.service_type !== 'Site Visit Checking';
+        } else {
+            return b.service_type === 'Site Visit Checking';
+        }
+    });
+
     return (
         <div className="container" style={{ padding: '5rem 0' }}>
             <motion.div
@@ -84,15 +94,49 @@ const MyBookings = () => {
                 </div>
             </motion.div>
 
+            {/* Tab Navigation */}
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', marginBottom: '2rem' }}>
+                <button
+                    onClick={() => setActiveTab('estimates')}
+                    style={{
+                        padding: '0.75rem 1.5rem',
+                        borderRadius: '0.5rem',
+                        border: 'none',
+                        background: activeTab === 'estimates' ? '#e11d48' : '#e5e7eb',
+                        color: activeTab === 'estimates' ? 'white' : '#374151',
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                        transition: 'all 0.3s ease'
+                    }}
+                >
+                    Detailed Estimates
+                </button>
+                <button
+                    onClick={() => setActiveTab('site_visits')}
+                    style={{
+                        padding: '0.75rem 1.5rem',
+                        borderRadius: '0.5rem',
+                        border: 'none',
+                        background: activeTab === 'site_visits' ? '#e11d48' : '#e5e7eb',
+                        color: activeTab === 'site_visits' ? 'white' : '#374151',
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                        transition: 'all 0.3s ease'
+                    }}
+                >
+                    Site Visits
+                </button>
+            </div>
+
             {error && <div style={{ color: 'red', textAlign: 'center' }}>{error}</div>}
 
-            {bookings.length === 0 ? (
+            {filteredBookings.length === 0 ? (
                 <div style={{ textAlign: 'center', color: 'var(--text-secondary)' }}>
-                    <p>No bookings found.</p>
+                    <p>No {activeTab === 'estimates' ? 'estimate requests' : 'site visits'} found.</p>
                 </div>
             ) : (
                 <div className="grid">
-                    {bookings.map((booking, index) => {
+                    {filteredBookings.map((booking, index) => {
                         const statusStyle = getStatusColor(booking.status);
                         return (
                             <motion.div

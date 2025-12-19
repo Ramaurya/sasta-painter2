@@ -19,6 +19,10 @@ const siteVisitSchema = new mongoose.Schema({
         default: 'Pending',
         enum: ['Pending', 'Confirmed', 'Scheduled', 'Inspection_Done', 'Completed', 'Cancelled']
     },
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    },
     createdAt: {
         type: Date,
         default: Date.now

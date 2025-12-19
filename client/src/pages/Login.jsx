@@ -41,7 +41,7 @@ const Login = () => {
                 setUser(res.data.user);
 
                 // 4. Redirect
-                navigate(from, { replace: true });
+                navigate('/');
             }
 
         } catch (err) {
@@ -69,7 +69,7 @@ const Login = () => {
                 if (res.data.user.isAdmin) {
                     navigate('/admin/dashboard');
                 } else {
-                    navigate(from, { replace: true });
+                    navigate('/');
                 }
                 return;
             }

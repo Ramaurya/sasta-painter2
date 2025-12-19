@@ -70,7 +70,8 @@ exports.postSiteVisit = async (req, res) => {
         const newSiteVisit = new SiteVisit({
             name,
             phone,
-            city
+            city,
+            user: req.session.user ? req.session.user._id : null
         });
 
         await newSiteVisit.save();
@@ -106,8 +107,19 @@ exports.updateInquiryStatus = async (req, res) => {
 // User Dashboard Methods
 exports.getMyBookings = async (req, res) => {
     try {
-        const inquiries = await Inquiry.find({ user: req.session.user._id }).sort({ createdAt: -1 });
-        res.json({ success: true, inquiries });
+        const inquiries = await Inquiry.find({ user: req.session.user._id }).lean();
+        const siteVisits = await SiteVisit.find({ user: req.session.user._id }).lean();
+
+        // Add a 'service_type' to site visits for UI consistency
+        const siteVisitsFormatted = siteVisits.map(sv => ({
+            ...sv,
+            service_type: 'Site Visit Checking',
+            address: 'Requested via Site Visit Form' // Placeholder as SiteVisit has no address
+        }));
+
+        const allBookings = [...inquiries, ...siteVisitsFormatted].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+        res.json({ success: true, inquiries: allBookings });
     } catch (err) {
         console.error(err);
         res.status(500).json({ success: false, error: 'Server Error' });
